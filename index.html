@@ -130,7 +130,7 @@
                 });
             }
 
-            var countyMap = L.geoJson(irishCountiesData, {
+            var geojson = L.geoJson(irishCountiesData, {
                 style: style,
                 onEachFeature: onEachFeature
             }).addTo(map);
@@ -146,7 +146,15 @@
                 }
             }).addTo(map);
 
-            //L.control.layers(countyMap, dublinSchoolsLayer).addTo(map);
+            var baseMaps = {
+                "Counties": geojson
+            };
+
+            var overlayMaps = {
+                "schools": dublinSchoolsLayer
+            };
+
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 
             var legend = L.control({position: 'bottomright'});

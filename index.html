@@ -39,6 +39,7 @@
         <!--TODO move these script to its own javascipt intilisation file -->
         <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
         <script type="text/javascript" src="js/irish-counties-data.js"></script>
+        <script type="text/javascript" src="js/county-averages-data.js"></script>
         <!-- Only Load this when dublin is zoomed in -->
         <script type="text/javascript" src="js/dublinPrimarySchools.js"></script>
         <script>
@@ -66,10 +67,28 @@
             // method that we will use to update the control based on feature properties passed
             info.update = function (props) {
                 this._div.innerHTML = this._div.innerHTML = '<h4>Irish average house price</h4>' +  (props ?
-                        '<b>' + props.id + '</b><br />' : 'Hover over a county');
+                        '<b>' + props.id + '</b><br />' +
+                        '<b>Average: </b>' + readEstimate(props.id) + '<br />'
+                                : 'Hover over a county');
             };
 
             info.addTo(map);
+
+            // Create our number formatter.
+            var formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 2,
+            });
+
+            function readEstimate(county) {
+                for(var i in countyAverages) {
+                    if(countyAverages[i].county === county) {
+                        return formatter.format(countyAverages[i].averagePrice);
+                    }
+                }
+                return '';
+            }
 
             // get color depending on population density value
             function getColor(d) {

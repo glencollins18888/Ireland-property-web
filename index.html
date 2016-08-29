@@ -68,7 +68,7 @@
             info.update = function (props) {
                 this._div.innerHTML = this._div.innerHTML = '<h4>Irish average house price</h4>' +  (props ?
                         '<b>County: </b>' + props.id + '<br />' +
-                        '<b>Price: </b>' + readEstimate(props.id) + '<br />'
+                        '<b>Price: </b>' + readAverageCountyPrice(props.id) + '<br />'
                                 : '</br> Hover over a county');
             };
 
@@ -81,7 +81,7 @@
                 minimumFractionDigits: 2,
             });
 
-            function readEstimate(county) {
+            function readAverageCountyPrice(county) {
                 for(var i in countyAverages) {
                     if(countyAverages[i].county === county) {
                         return formatter.format(countyAverages[i].averagePrice);

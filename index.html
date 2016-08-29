@@ -39,6 +39,8 @@
         <!--TODO move these script to its own javascipt intilisation file -->
         <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
         <script type="text/javascript" src="js/irish-counties-data.js"></script>
+        <!-- Only Load this when dublin is zoomed in -->
+        <script type="text/javascript" src="js/dublinPrimarySchools.js"></script>
         <script>
             //Set the coordinates to Ireland and the zoom to 7
             var map = L.map('mapid').setView([53.38333, -8.5918], 7);
@@ -128,10 +130,31 @@
                 });
             }
 
-            geojson = L.geoJson(irishCountiesData, {
+            var geojson = L.geoJson(irishCountiesData, {
                 style: style,
                 onEachFeature: onEachFeature
             }).addTo(map);
+
+            //Add Dublin primary schools to map
+            var dublinSchoolsLayer = L.geoJson(dublinPrimarySchools, {
+                onEachFeature: function (feature, layer) {
+                    popupOptions = {maxWidth: 200};
+                    layer.bindPopup("<b>School Name:</b> " + feature.properties.officialSchoolName + "<br>" +
+                            "<b>Address:</b> " + feature.properties.fullAddress + "<br>" +
+                            "<b>Email:</b> <a>" + feature.properties.emailAddress + "</a><br>" +
+                            "<b>Total Pupils:</b> " + feature.properties.totalPupils, popupOptions);
+                }
+            }).addTo(map);
+
+            var baseMaps = {
+                "Counties": geojson
+            };
+
+            var overlayMaps = {
+                "Primary Schools": dublinSchoolsLayer
+            };
+
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 
             var legend = L.control({position: 'bottomright'});

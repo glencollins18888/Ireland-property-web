@@ -68,7 +68,7 @@
             info.update = function (props) {
                 this._div.innerHTML = this._div.innerHTML = '<h4>Irish average house price</h4>' +  (props ?
                         '<b>County: </b>' + props.id + '<br />' +
-                        '<b>Price: </b>' + readAverageCountyPrice(props.id) + '<br />'
+                        '<b>Price: </b>' + formatPrice(readAverageCountyPrice(props.id)) + '<br />'
                                 : '</br> Hover over a county');
             };
 
@@ -81,35 +81,46 @@
                 minimumFractionDigits: 2,
             });
 
+            function formatPrice(price) {
+                if(price) {
+                    return formatter.format(price);
+                }
+                return price;
+            }
+
             function readAverageCountyPrice(county) {
                 for(var i in countyAverages) {
                     if(countyAverages[i].county === county) {
-                        return formatter.format(countyAverages[i].averagePrice);
+                        return countyAverages[i].averagePrice;
                     }
                 }
-                return '';
+                return undefined;
             }
 
             // get color depending on population density value
-            function getColor(d) {
-                return d > 1000 ? '#800026' :
-                        d > 500  ? '#BD0026' :
-                                d > 200  ? '#E31A1C' :
-                                        d > 100  ? '#FC4E2A' :
-                                                d > 50   ? '#FD8D3C' :
-                                                        d > 20   ? '#FEB24C' :
-                                                                d > 10   ? '#FED976' :
-                                                                        '#FFEDA0';
+            // This function will generate a color between red and green depending on the value of houses
+            function getColor(input) {
+                if(input) {
+                    var lowest = 77000;
+                    var highest = 320000 - lowest;
+                    var value = input - lowest;
+                    var red = Math.floor(255 * (value / highest));
+                    var green = Math.floor(255 - (255 * (value / highest)));
+                    var blue = 0;
+                    return 'rgb(' + red + ',' + green + ',' + blue + ')';
+                }
+                return '#FFEDA0';
             }
 
             function style(feature) {
+                var price = readAverageCountyPrice(feature.properties.id);
                 return {
                     weight: 2,
                     opacity: 1,
                     color: 'white',
                     dashArray: '3',
                     fillOpacity: 0.7,
-                    fillColor: getColor(feature.properties.density)
+                    fillColor: getColor(price)
                 };
             }
 
